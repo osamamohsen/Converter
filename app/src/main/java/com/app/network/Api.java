@@ -8,7 +8,6 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface Api {
-    //https://revolut.duckdns.org/latest?base=EUR
     @GET("latest")
     Observable<CurrenciesResponse> getCurrencies(@Query("base") String base);
 }

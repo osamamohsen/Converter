@@ -19,7 +19,6 @@ import com.app.R;
 import com.app.adapter.CurrencyAdapter;
 import com.app.databinding.ActivityMainBinding;
 import com.app.models.QtySubmit;
-import com.app.service.TimerService;
 import com.app.utiles.Constants;
 import com.app.utiles.WrapContentLinearLayoutManager;
 import com.app.viewmodels.MainViewModel;
@@ -45,7 +44,6 @@ public class MainActivity extends DaggerAppCompatActivity {
 //        setContentView(R.layout.activity_main);
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         viewModel = ViewModelProviders.of(this, providerFactory).get(MainViewModel.class);
-        startService(new Intent(this, TimerService.class));
         activityMainBinding.setMainViewModel(viewModel);
         activityMainBinding.rvMain.setHasFixedSize(true);
         activityMainBinding.rvMain.setItemViewCacheSize(30);
@@ -55,10 +53,8 @@ public class MainActivity extends DaggerAppCompatActivity {
         activityMainBinding.rvMain.setLayoutManager(linearLayoutManager);
 
         setEvent();
-        stopService(new Intent(this, TimerService.class));
     }
 
-    boolean setBefore = false;
 
     private void setEvent() {
         viewModel.mMutableLiveData.observe((LifecycleOwner) this, new Observer<Object>() {
@@ -66,12 +62,15 @@ public class MainActivity extends DaggerAppCompatActivity {
             public void onChanged(@Nullable Object o) {
                 String action = (String) o;
                 if (action.equals(Constants.CURRENCY)) {
-                    if (!setBefore) {
+                    //adapter not set before for recycler
+                    if (!viewModel.setBefore) {
+                        //set data first time
                         currencyAdapter = new CurrencyAdapter(viewModel.currencies, viewModel.base, viewModel.qty);
                         activityMainBinding.rvMain.setAdapter(currencyAdapter);
-                        setEventAdapter();
-                        setBefore = true;
+                        setEventAdapter();//listen for event of recycler
+                        viewModel.setBefore = true;//recycler had been set and update list if you come again
                     } else {
+                        //set new data
                         currencyAdapter.setData(viewModel.currencies, viewModel.qty);
                     }
                 }
@@ -87,15 +86,20 @@ public class MainActivity extends DaggerAppCompatActivity {
             public void onChanged(@androidx.annotation.Nullable Object aVoid) {
                 QtySubmit qtySubmit = (QtySubmit) aVoid;
                 if (qtySubmit.getType().equals(Constants.SUBMIT)) {
+                    //move my select to current editable
                     viewModel.currencyModelSelect = viewModel.currencies.get(qtySubmit.getPosition());
                     viewModel.currencyModelSelect.setPrice(viewModel.qty * viewModel.currencyModelSelect.getPrice());
+                    //fetch unit price for currency
                     viewModel.qty = viewModel.currencyModelSelect.getPrice() * qtySubmit.getQty();
                     viewModel.base = viewModel.currencyModelSelect.getName();
                     viewModel.pos = qtySubmit.getPosition();
+                    //swap between my select and position 0
                     currencyAdapter.swap(qtySubmit.getPosition());
+                    //move to top recycler
                     activityMainBinding.rvMain.smoothScrollToPosition(0);
                     linearLayoutManager.scrollToPositionWithOffset(0, 0);
                 } else if (qtySubmit.getType().equals(Constants.TEXT_CHANGE)) {
+                    //change unit price
                     viewModel.qty = qtySubmit.getQty();
                 }
             }

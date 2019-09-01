@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
         <variable
             name="mainViewModel"
             type="com.app.viewmodels.MainViewModel" />
@@ -15,6 +16,25 @@
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
 
+
+        <ProgressBar
+            android:visibility="@{mainViewModel.progress ? View.VISIBLE : View.GONE }"
+            android:id="@+id/progressView"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+        <TextView
+            android:text="@{mainViewModel.checkConnection}"
+            android:visibility="@{mainViewModel.checkConnectionVisiblity ? View.VISIBLE : View.GONE }"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:textSize="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_main"
             android:layout_width="match_parent"
@@ -24,6 +44,7 @@
             tools:orientation="vertical"
             tools:scrollbars="horizontal"
             tools:spanCount="1" />
+
 
     </RelativeLayout>
 </layout>

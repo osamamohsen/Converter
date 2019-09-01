@@ -82,7 +82,6 @@ public class CurrencyHelper {
     ArrayList<CurrencyModel> currencyModels = new ArrayList<>();
 
     public void setCurrencyData(Rates rates) {
-        Log.e(TAG, "setCurrencyData_rates: " + rates.getAUD());
         currencyModels.clear();
         if (rates.getAUD() != -1)
             currencyModels.add(new CurrencyModel("AUD", getFlag("AUD"), rates.getAUD()));
@@ -151,7 +150,6 @@ public class CurrencyHelper {
         if (rates.getEUR() != -1)
             currencyModels.add(new CurrencyModel("EUR", getFlag("EUR"), rates.getEUR()));
 
-        Log.e(TAG, "setCurrencyData: " + currencyModels.get(0).getPrice());
     }
 
     public ArrayList<CurrencyModel> getCurrencyModels() {
