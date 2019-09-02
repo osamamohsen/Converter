@@ -25,7 +25,7 @@ public class ItemCurrencyViewModel extends ParentViewModel {
     private Double qty;
 
 
-    public ItemCurrencyViewModel(CurrencyModel currencyModel , int position,Double qty) {
+    public ItemCurrencyViewModel(CurrencyModel currencyModel, int position, Double qty) {
         this.currencyModel = currencyModel;
         this.position = position;
         this.qty = qty;
@@ -34,23 +34,30 @@ public class ItemCurrencyViewModel extends ParentViewModel {
     private static DecimalFormat df2 = new DecimalFormat("##.####");
 
 
-    public String getText(){
-        if(position!=0)
-            return String.valueOf(df2.format(currencyModel.getPrice()*qty));
+    public String getText() {
+        if (position != 0)
+            return String.valueOf(df2.format(currencyModel.getPrice() * qty));
         else
             return String.valueOf(df2.format(currencyModel.getPrice()));
     }
 
     @BindingAdapter("text")
     public static void setText(EditText editText, String text) {
-        editText.setText(text);
+        if (editText != null) editText.setText(text);
     }
 
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if(position == 0) {
-            if(count == 0) s="0.0";
-            Log.e(TAG, "onTextChanged: "+count );
-            mMutableLiveData.postValue(new QtySubmit(Constants.TEXT_CHANGE,position,Double.parseDouble(s.toString())));
+        if (position == 0) {
+            if (count == 0) s = "0.0";
+            Log.e(TAG, "onTextChanged: " + count);
+            double cost = 0;
+            try {
+                cost = Double.valueOf(s.toString());
+            } catch (NumberFormatException e) {
+                cost = 0;
+            }
+
+            mMutableLiveData.postValue(new QtySubmit(Constants.TEXT_CHANGE, position, cost));
         }
     }
 
@@ -62,7 +69,7 @@ public class ItemCurrencyViewModel extends ParentViewModel {
         this.currencyModel = currencyModel;
     }
 
-    public Drawable getImageUrl(){
+    public Drawable getImageUrl() {
         return currencyModel.getDrawable();
     }
 
@@ -71,9 +78,9 @@ public class ItemCurrencyViewModel extends ParentViewModel {
         imageView.setImageDrawable(drawable);
     }
 
-    public void selectCurrency(){
-        if(position != 0)
-            mMutableLiveData.postValue(new QtySubmit(Constants.SUBMIT,position,qty));
+    public void selectCurrency() {
+        if (position != 0)
+            mMutableLiveData.postValue(new QtySubmit(Constants.SUBMIT, position, qty));
     }
 
     public int getPosition() {

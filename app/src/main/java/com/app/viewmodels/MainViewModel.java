@@ -97,6 +97,7 @@ public class MainViewModel extends ParentViewModel {
     }
 
     public void getCurrency() {
+        EspressoIdlingResource.increment();
         if(!setBefore) progress.set(true);
         checkConnectionVisiblity.set(false);
         compositeDisposable.add(api.getCurrencies(base)
@@ -105,6 +106,7 @@ public class MainViewModel extends ParentViewModel {
                 .subscribe(new Consumer<CurrenciesResponse>() {
                             @Override
                             public void accept(final CurrenciesResponse resp) throws Exception {
+                                EspressoIdlingResource.decrement();
                                 progress.set(false);
                                 checkConnectionVisiblity.set(false);
                                 if (resp != null && resp.getRates() != null) {

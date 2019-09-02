@@ -27,7 +27,7 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.Curren
     private Double qty;
     public MutableLiveData<Object> mMutableLiveData = new MutableLiveData<>();
 
-    public CurrencyAdapter(List<CurrencyModel> currencies,String base,Double qty) {
+    public CurrencyAdapter(List<CurrencyModel> currencies, String base, Double qty) {
         this.currencies = currencies;
         this.base = base;
         this.qty = qty;
@@ -51,11 +51,17 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.Curren
 
 
     private static final String TAG = "CurrencyAdapter";
+
     @Override
     public void onBindViewHolder(@NonNull CurrencyView holder, final int position) {
+        if (position < 0 || position >= getItemCount()) {
+            throw new IndexOutOfBoundsException("Inconsistency detected. Invalid view holder "
+                    + "adapter position" + holder);
+        }else {
             ItemCurrencyViewModel itemCurrencyViewModel = new ItemCurrencyViewModel(currencies.get(position), position, qty);
             holder.ItemCurrencyConvertBinding.setItemCurrencyViewModel(itemCurrencyViewModel);
             setEvent(itemCurrencyViewModel);
+        }
     }
 
     private void setEvent(ItemCurrencyViewModel itemCurrencyViewModel) {
@@ -80,7 +86,7 @@ public class CurrencyAdapter extends RecyclerView.Adapter<CurrencyAdapter.Curren
     public void setData(List<CurrencyModel> currencies, Double qty) {
         this.currencies = currencies;
         this.qty = qty;
-        notifyItemRangeChanged(1,currencies.size());
+        notifyItemRangeChanged(1, currencies.size());
     }
 
     public void swap(int pos) {
